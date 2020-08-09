@@ -2,67 +2,68 @@ package com.example.spaceinvaders;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
-import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 public class GameView extends SurfaceView implements Runnable {
-    Context context;
     private Thread thread;
-    boolean isPlaying, isGameOver = false;
-    private PlayerShip player;
-    private boolean paused = true;
-
-    private Canvas canvas;
+    private Context context;
+    private int screenX,screenY;
+    private boolean isPlaying;
     private Paint paint;
-    private SurfaceHolder surfaceHolder;
-
-    //size of screen in pixels
-    private int screenX;
-    private int screenY;
-
-    private PlayerShip playerShip;
-    private Bullet bullet;
-
-    //invaders bullets
-    private Bullet[] invaderBullets = new Bullet[200];
-
-    //total invaders
-    private Invaders[] invaders = new Invaders[60];
-    int numsInvaders = 0;   //keep track of invaders
-
-    //score
-    int score = 0;
+    private int score=0;
+    private Canvas canvas;
 
     public GameView(Context context, int x, int y){
         super(context);
         this.context = context;
-
-        //initialize holder and paint object
-        this.surfaceHolder = getHolder();
-        this.paint = new Paint();
-
         this.screenX = x;
         this.screenY = y;
-
-        getStarted();   //prepareLevel()
-
-    }
-    public void getStarted(){
-
     }
 
     @Override
     public void run() {
         while(isPlaying){
-            long startFrameTime = System.currentTimeMillis();
-            if(!paused){
-                update();
-            }
+            update();
+            draw();
+            sleep();
         }
+    }
+
+    private void update() {
+    }
+
+    private void draw(){
+        if(getHolder().getSurface().isValid()){
+            canvas = getHolder().lockCanvas();
+            canvas.drawColor(Color.BLACK);
+            paint = new Paint();
+            paint.setColor(Color.WHITE);
+            paint.setTextSize(60);
+            canvas.drawText("Score: "+score,20,60,paint);
+            getHolder().unlockCanvasAndPost(canvas);
+        }
+    }
+
+    private void sleep(){
 
     }
-    public void update(){
 
+    public void resume(){
+        isPlaying=true;
+        thread = new Thread(this);
+        thread.start();
     }
+    //stop thread
+    public void pause(){
+        try {
+            isPlaying = false;
+            thread.join();
+        } catch (InterruptedException e){
+            e.printStackTrace();
+        }
+    }
+
+
 }
