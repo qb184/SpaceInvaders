@@ -4,26 +4,32 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
+
 public class GameView extends SurfaceView implements Runnable {
     private Thread thread;
     private Context context;
-    private int screenX,screenY;
+    private int screenX,screenY=0;
     private boolean isPlaying;
     private Paint paint;
     private int score=0;
     private Canvas canvas;
     private PlayerShip playerShip;
     private boolean pause = true;
-
+    private List<Bullet> bullets;
+    private MainActivity activity;
     public static float screenRatioX, screenRatioY;
-
-    public GameView(Context context, int x, int y){
-        super(context);
-        this.context = context;
+    Rect rect;
+    public GameView(MainActivity activity, int x, int y){
+        super(activity);
+        this.activity = activity;
         this.screenX = x;
         this.screenY = y;
         paint = new Paint();
@@ -32,14 +38,11 @@ public class GameView extends SurfaceView implements Runnable {
         screenRatioX = 1080f/screenX;
         screenRatioY = 2160f/screenY;
 
-        playerShip = new PlayerShip(context,screenX,screenY);
-
-        prepareGame();
+        playerShip = new PlayerShip(this,screenX,screenY, getResources());
+        bullets = new ArrayList<>();
     }
 
-    public void prepareGame(){
-        playerShip = new PlayerShip(context,screenX,screenY);
-    }
+
     @Override
     public void run() {
         while(isPlaying){
@@ -50,14 +53,19 @@ public class GameView extends SurfaceView implements Runnable {
     }
 
     private void update() {
-        playerShip.update();
-        if(playerShip.x < 0)
-            playerShip.x = 0;
-        if(playerShip.x >= screenX - playerShip.width )
-            playerShip.x = screenX - playerShip.width;
+        playerShip.update(screenX);
+
+        List<Bullet> trash = new ArrayList<>();
+        for(Bullet bullet:bullets){
+            if(bullet.y < 0)
+                trash.add(bullet);
+            bullet.y -= 40*screenRatioY;
+        }
+        for(Bullet bullet:trash){
+            bullets.remove(bullet);
+        }
 
     }
-
 
     private void draw(){
         if(getHolder().getSurface().isValid()){
@@ -68,6 +76,10 @@ public class GameView extends SurfaceView implements Runnable {
             canvas.drawText("Score: "+score,20,60,paint);
 
             canvas.drawBitmap(playerShip.getShip(),playerShip.x,playerShip.y,paint);
+
+            for(Bullet bullet: bullets){
+                canvas.drawBitmap(bullet.bullet,bullet.x,bullet.y,paint);
+            }
 
             getHolder().unlockCanvasAndPost(canvas);
 
@@ -95,24 +107,42 @@ public class GameView extends SurfaceView implements Runnable {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        try {
+            Thread.sleep(50);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         switch(event.getAction()){
             case MotionEvent.ACTION_DOWN:
+            case MotionEvent.ACTION_MOVE:
                 pause = false;
-                    if (event.getX() > screenX / 2) {
-                        playerShip.getShipMoving(playerShip.RIGHT);
-                    } else if (event.getX() < screenX / 2) {
-                        playerShip.getShipMoving(playerShip.LEFT);
-                    }
-
-                break;
+                    if (event.getX() > playerShip.x+playerShip.width) {
+                        playerShip.getMovingState(playerShip.RIGHT);
+                    } else if (event.getX() < playerShip.x) {
+                        playerShip.getMovingState(playerShip.LEFT);
+                    } else if(event.getX()==playerShip.x+playerShip.width/2)
+                        pause=true;
+                    playerShip.toShoot++;
+                 break;
 
                 //no movement
             case MotionEvent.ACTION_UP:
                 pause = true;
-                    playerShip.getShipMoving(playerShip.STOP);
+                playerShip.getMovingState(playerShip.STOP);
 
                 break;
         }
         return true;
     }
+
+    public void newBullet(){
+        Bullet bullet = new Bullet(getResources(),playerShip);
+
+        bullet.x = playerShip.x + playerShip.width/2 - bullet.width/2;
+        bullet.y = playerShip.y - bullet.height/2;
+        bullets.add(bullet);
+}
+
+
 }

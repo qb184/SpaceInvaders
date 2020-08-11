@@ -1,6 +1,7 @@
 package com.example.spaceinvaders;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
@@ -12,20 +13,19 @@ import static com.example.spaceinvaders.GameView.screenRatioY;
 
 public class PlayerShip {
     private Bitmap ship;
-    private float speed;
-    public float x,y;
-    private Context context;
-     int width, height;  //of the ship
-    private RectF rectF;
+    public int x,y;
+    int width, height;  //of the ship
     private int shipMoving;
     public final int LEFT = 1;
     public final int RIGHT = 2;
     public final int STOP = 0;
+    private GameView gameView;
+    int toShoot = 0;
 
-    public PlayerShip(Context context, int screenX, int screenY){
-        this.context = context;
+    public PlayerShip(GameView gameView, int screenX, int screenY,Resources res){
+        this.gameView = gameView;
         //draw spaceship
-        ship = BitmapFactory.decodeResource(context.getResources(),R.drawable.ship);
+        ship = BitmapFactory.decodeResource(res,R.drawable.ship);
 
         width = ship.getWidth();
         height = ship.getHeight();
@@ -37,34 +37,51 @@ public class PlayerShip {
         height *= screenRatioY;
 
         ship = Bitmap.createScaledBitmap(ship,
-                width,
-                height,false);
-        x=screenX/2;
-        y=screenY-100*screenRatioY;
+                (int)width,
+                (int) height,false);
+        x = screenX/2;
+        y = (int) (screenY-60*screenRatioY);
 
-        speed = 350;
     }
 
-    public void getShipMoving(int direction){
+    public void getMovingState(int direction){
         shipMoving = direction;
     }
 
-    public void update(){
+    public int getShipMoving(){
+        return shipMoving;
+    }
+
+    public void update(int screenX){
+        //update position of x
         if(shipMoving == LEFT){
-            x -= 5*screenRatioX;
+            x -= 10*screenRatioX;
         }
         if (shipMoving == RIGHT){
-            x += 5*screenRatioX;
+            x += 10*screenRatioX;
         }
+
+        //check if the ship reach 2 sides of screen
+        if(x < 0)
+            x = 0;
+        if(x >= screenX - width)
+            x = (int) (screenX - width);
 
     }
 
     public Bitmap getShip(){
+        if(toShoot!=0){
+            gameView.newBullet();
+            toShoot--;
+        }
         return ship;
     }
 
-    public float getX() {
-        return x;
+    public Rect getCollisionShape(){
+        return new Rect(x,y,x+width,y+height);
     }
+
+
+
 
 }
