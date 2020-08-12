@@ -176,6 +176,8 @@ public class GameView extends SurfaceView implements Runnable {
         Bullet bullet = new Bullet(getResources(),playerShip);
         bullet.setX(playerShip.getX() + playerShip.getWidth()/2 - bullet.width/2);
         bullet.setY(playerShip.getY() - bullet.height/2);
+        bullet.x = playerShip.x + playerShip.width/2 - bullet.width/2;
+        bullet.y = playerShip.y - bullet.height/2;
         bullets.add(bullet);
 }
     //create invaders array
