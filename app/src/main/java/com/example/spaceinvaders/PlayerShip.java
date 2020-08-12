@@ -13,8 +13,7 @@ import static com.example.spaceinvaders.GameView.screenRatioY;
 
 public class PlayerShip {
     private Bitmap ship;
-    public int x,y;
-    int width, height;  //of the ship
+    private int x,y, width, height; //of the ship
     private int shipMoving;
     public final int LEFT = 1;
     public final int RIGHT = 2;
@@ -55,10 +54,10 @@ public class PlayerShip {
     public void update(int screenX){
         //update position of x
         if(shipMoving == LEFT){
-            x -= 10*screenRatioX;
+            x -= 20*screenRatioX;
         }
         if (shipMoving == RIGHT){
-            x += 10*screenRatioX;
+            x += 20*screenRatioX;
         }
 
         //check if the ship reach 2 sides of screen
@@ -77,9 +76,22 @@ public class PlayerShip {
         return ship;
     }
 
-    public Rect getCollisionShape(){
-        return new Rect(x,y,x+width,y+height);
+    public int getX(){
+        return x;
     }
+    public int getY(){
+        return y;
+    }
+    public int getWidth(){
+        return width;
+    }
+    public int getHeight(){
+        return height;
+    }
+
+
+
+
 
 
 
