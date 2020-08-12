@@ -78,6 +78,7 @@ public class PlayerShip {
 
     public int getX(){
         return x;
+
     }
     public int getY(){
         return y;
@@ -88,9 +89,6 @@ public class PlayerShip {
     public int getHeight(){
         return height;
     }
-
-
-
 
 
 
