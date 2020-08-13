@@ -28,10 +28,6 @@ public class Bullet {
         height *= screenRatioY;
 
         bullet = Bitmap.createScaledBitmap(bullet,width,height,false);
-
-//        x = playerShip.x + playerShip.width/2 - width/2;
-//        y = playerShip.y-height/2;
-
     }
 
     //get rect shape for collision

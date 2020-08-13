@@ -77,9 +77,9 @@ public class GameView extends SurfaceView implements Runnable {
         //update bullet
         List<Bullet> trash = new ArrayList<>();
         for (Bullet bullet : bullets) {
-//            if(bullet.getY() < 0) { //bullet is out of screen
-//                trash.add(bullet);
-//            }
+            if(bullet.getY() < 0) { //bullet is out of screen
+                trash.add(bullet);
+            }
             bullet.setY((int) (bullet.getY() - 100 * screenRatioY));  //move up
 
             for (Invaders invader : invaders) {
