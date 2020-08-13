@@ -54,8 +54,4 @@ public class Bullet {
     public int getHeight(){
         return height;
     }
-
-
-
-
 }
