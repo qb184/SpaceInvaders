@@ -13,33 +13,33 @@ public class Invaders {
     public final int RIGHT = 2;
     private boolean isVisible;
     Bitmap bitmap;
-    private int direction=RIGHT;
+    private int direction = RIGHT;
 
-    public Invaders(Resources res, int row, int column, int screenX, int screenY){
-        width = screenX/18;
-        height = screenY/18;
+    public Invaders(Resources res, int row, int column, int screenX, int screenY) {
+        width = screenX / 18;
+        height = screenY / 18;
 
         isVisible = true;
 
-        int padding = screenX/25;
+        int padding = screenX / 25;
 
-        x = column*(width + padding);
-        y = row * (height + padding/3);
+        x = column * (width + padding);
+        y = row * (height + padding / 3);
 
-        bitmap = BitmapFactory.decodeResource(res,R.drawable.alien2);
+        bitmap = BitmapFactory.decodeResource(res, R.drawable.alien2);
 
-        bitmap = Bitmap.createScaledBitmap(bitmap,width,height,false);
+        bitmap = Bitmap.createScaledBitmap(bitmap, width, height, false);
     }
 
-    public void update(){
-        if(direction==LEFT)
-            x -= 10*screenRatioX;
-        if(direction ==RIGHT)
-            x+=10*screenRatioX;
+    public void update() {
+        if (direction == LEFT)
+            x -= 10 * screenRatioX;
+        if (direction == RIGHT)
+            x += 10 * screenRatioX;
     }
 
-    public void movingDown(){
-        if(direction == LEFT)
+    public void movingDown() {
+        if (direction == LEFT)
             direction = RIGHT;
         else
             direction = LEFT;
@@ -47,34 +47,40 @@ public class Invaders {
 
     }
 
-    public boolean getVisibility(){
+    public boolean getVisibility() {
         return isVisible;
     }
-    public void setInvisible(){
-        isVisible=false;
+
+    public void setInvisible() {
+        isVisible = false;
     }
 
-    public int getX(){
+    public int getX() {
         return x;
     }
+
     public int getY() {
         return y;
     }
-    public int getWidth(){
+
+    public int getWidth() {
         return width;
     }
-    public int getHeight(){
+
+    public int getHeight() {
         return height;
     }
-    public void setY(int a){
-        y=a;
+
+    public void setY(int a) {
+        y = a;
     }
-    public int getDirection(){
+
+    public int getDirection() {
         return direction;
     }
 
-    public Rect getCollisionShape(){
-        return new Rect(x,y,x+width,y+height);
+    public Rect getCollisionShape() {
+        return new Rect(x, y, x + width, y + height);
     }
 
 }
