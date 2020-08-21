@@ -1,13 +1,10 @@
 package com.example.spaceinvaders;
-
-import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +30,8 @@ public class GameView extends SurfaceView implements Runnable {
         this.screenX = x;
         this.screenY = y;
         paint = new Paint();
-        invaders = new Invaders[35];
+        invaders = new Invaders[0];
+
         //scale screen
         screenRatioX = 1080f / screenX;
         screenRatioY = 2160f / screenY;
@@ -41,7 +39,6 @@ public class GameView extends SurfaceView implements Runnable {
         playerShip = new PlayerShip(this, screenX, screenY, getResources());
         bullets = new ArrayList<>();
     }
-
 
     @Override
     public void run() {
@@ -59,41 +56,39 @@ public class GameView extends SurfaceView implements Runnable {
         changeDirection = false;
 
         //update invaders
-        for (Invaders invader : invaders) {
-            if (invader.getVisibility()) {
-                invader.update();
-                if (invader.getX() > screenX - invader.getWidth() || invader.getX() < 0)
+        for(int i =0;i<invaders.length;i++){
+            if (invaders[i].getVisibility()) {
+                invaders[i].update();
+                if ((invaders[i].getX() > screenX - invaders[i].getWidth()) || invaders[i].getX() < 0)
                     changeDirection = true;
             }
         }
         if (changeDirection) {
-            for (Invaders invader : invaders) {
-                invader.movingDown();
-                if (invader.getY() >= screenY - invader.getHeight())
+            for(int i =0;i<invaders.length;i++){
+                invaders[i].movingDown();
+                if (invaders[i].getY() >= screenY - invaders[i].getHeight())
                     gameOver = true;
             }
         }
 
         //update bullet
         List<Bullet> trash = new ArrayList<>();
-        for (Bullet bullet : bullets) {
-            if(bullet.getY() < 0) { //bullet is out of screen
-                trash.add(bullet);
+        for(int i =0; i< bullets.size();i++){
+            if(bullets.get(i).getY() < 0) { //bullet is out of screen
+                trash.add(bullets.get(i));
             }
-            bullet.setY((int) (bullet.getY() - 100 * screenRatioY));  //move up
+            bullets.get(i).setY((int) (bullets.get(i).getY() - 100 * screenRatioY));  //move up
 
-            for (Invaders invader : invaders) {
-                if (invader.getVisibility() && Rect.intersects(invader.getCollisionShape(), bullet.getCollisionShape())) {
+//            for (Invaders invader : invaders) {
+                for(int j =0;i<invaders.length;i++){
+                if (invaders[j].getVisibility() && Rect.intersects(invaders[j].getCollisionShape(), bullets.get(i).getCollisionShape())) {
                     score++;
-                    invader.setY(screenY + 500);
-                    bullet.setY(-500);
-                    trash.add(bullet);  //need this??
-                    invader.setInvisible();
+                    invaders[i].setY(screenY + 500);
+                    bullets.get(i).setY(-500);
+                    trash.add(bullets.get(i));  //need this??
+                    invaders[i].setInvisible();
                 }
             }
-
-
-
         }
         for (Bullet bullet : trash) {
             bullets.remove(bullet);
@@ -154,20 +149,22 @@ public class GameView extends SurfaceView implements Runnable {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
             case MotionEvent.ACTION_MOVE:
-                pause = false;
-
+//                pause = false;
+                isPlaying=true;
                 if (event.getX() > playerShip.getX() + playerShip.getWidth()) {
                     playerShip.getMovingState(playerShip.RIGHT);
                 } else if (event.getX() < playerShip.getX()) {
                     playerShip.getMovingState(playerShip.LEFT);
                 } else if (event.getX() == playerShip.getX() + playerShip.getWidth() / 2)
-                    pause = true;
+//                    pause = true;
+                    isPlaying=false;
                 playerShip.toShoot++;
                 break;
 
             //no movement
             case MotionEvent.ACTION_UP:
-                pause = true;
+//                pause = true;
+                isPlaying=false;
                 playerShip.getMovingState(playerShip.STOP);
 
                 break;
@@ -185,11 +182,12 @@ public class GameView extends SurfaceView implements Runnable {
 
     //create invaders array
     public void getInvaders(Invaders[] invaders) {
-        for (int i = 0; i < 5; i++) {
-            for (int j = 0; j < 7; j++) {
-                invaders[i * 7 + j] = new Invaders(getResources(), i, j, screenX, screenY);
-            }
-        }
+//        for (int i = 0; i < 5; i++) {
+//            for (int j = 0; j < 7; j++) {
+//                invaders[i * 7 + j] = new Invaders(getResources(), i, j, screenX, screenY);
+//            }
+//        }
     }
+
 }
 
