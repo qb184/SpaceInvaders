@@ -9,12 +9,12 @@ import static com.example.spaceinvaders.GameView.screenRatioX;
 import static com.example.spaceinvaders.GameView.screenRatioY;
 
 public class Bullet {
-    private int x, y;
+    int x, y;
     Bitmap bullet;
-
     //width and height of bullet
-     int width;
-     int height;
+    int width;
+    int height;
+    Rect rect;
 
     public Bullet(Resources res,PlayerShip playerShip){
         bullet = BitmapFactory.decodeResource(res,R.drawable.bullet);
@@ -28,26 +28,12 @@ public class Bullet {
         height *= screenRatioY;
 
         bullet = Bitmap.createScaledBitmap(bullet,width,height,false);
+
+        rect = new Rect();
+
     }
 
-    //get rect shape for collision
-    public Rect getCollisionShape(){
-        return new Rect(x,y,x+width,y+height);
-    }
-    public void setX(int a){ x=a;}
-    public void setY(int a){
-        y=a;
-    }
-    public int getY(){
-        return y;
-    }
-    public int getX(){
-        return x;
-    }
-    public int getWidth(){
-        return width;
-    }
-    public int getHeight(){
-        return height;
-    }
+
+
+
 }

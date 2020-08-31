@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 
 import static com.example.spaceinvaders.GameView.screenRatioX;
+import static com.example.spaceinvaders.GameView.screenRatioY;
 
 public class Invaders {
     private int x, y, width, height;
@@ -13,24 +14,25 @@ public class Invaders {
     public final int RIGHT = 2;
     private boolean isVisible;
     Bitmap bitmap;
-    private int direction = RIGHT;
+    private int direction;
 
     public Invaders(Resources res, int row, int column, int screenX, int screenY) {
         width = screenX / 18;
         height = screenY / 18;
-
+        direction = RIGHT;
         isVisible = true;
 
         int padding = screenX / 25;
 
         x = column * (width + padding);
-        y = row * (height + padding / 3);
+        y = (int) (100*screenRatioY + row * (height + padding / 3));
 
         bitmap = BitmapFactory.decodeResource(res, R.drawable.alien2);
 
         bitmap = Bitmap.createScaledBitmap(bitmap, width, height, false);
     }
 
+    //move invaders to left or right
     public void update() {
         if (direction == LEFT)
             x -= 10 * screenRatioX;
