@@ -36,7 +36,7 @@ public class Invaders {
     public void update() {
         if (direction == LEFT)
             x -= 10 * screenRatioX;
-        if (direction == RIGHT)
+        else if (direction == RIGHT)
             x += 10 * screenRatioX;
     }
 
@@ -46,7 +46,6 @@ public class Invaders {
         else
             direction = LEFT;
         y += height;
-
     }
 
     public boolean getVisibility() {

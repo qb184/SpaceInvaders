@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 
@@ -24,6 +25,10 @@ public class GameView extends SurfaceView implements Runnable {
     private MainActivity activity;
     public static float screenRatioX, screenRatioY;
     private Invaders[]  invaders = new Invaders[24];
+    private Handler handler;
+    boolean changeDirection;
+    boolean gameOver;
+    int countInvader;
 
     public GameView(MainActivity activity, int x, int y){
         super(activity);
@@ -31,17 +36,22 @@ public class GameView extends SurfaceView implements Runnable {
         this.screenX = x;
         this.screenY = y;
         paint = new Paint();
+        gameOver = false;
+        countInvader = 0;
+
+//        handler = new Handler();
 
         //scale screen
         screenRatioX = 1440f/screenX;
         screenRatioY = 2960f/screenY;
-
         playerShip = new PlayerShip(this,screenX,screenY, getResources());
         bullets = new ArrayList<>();
+        createInvaders(invaders);
+
     }
 
 
-    @Override
+        @Override
     public void run() {
         while(isPlaying){
             update();
@@ -51,21 +61,36 @@ public class GameView extends SurfaceView implements Runnable {
     }
 
     private void update() {
-        createInvaders(invaders);
-//        for(Invaders invader:invaders){
-//            invader.update();
-//        }
+        changeDirection = false; //set it here bc whenever update() is called again, , each invader will be checked to move horizontally again
+        for (Invaders invader : invaders) {
+            if (invader.getVisibility()) {
+                invader.update();
+                if (invader.getX() > screenX - invader.getWidth() || invader.getX() < 0) {
+                    changeDirection = true; //when any invader reaches either side of screen
+                }
+            }
+        }
+        if (changeDirection) {
+            for (Invaders invader : invaders) {
+                invader.movingDown();
+                if (invader.getY() > screenY - invader.getHeight())
+                    isPlaying = false;
+            }
+        }
+
         playerShip.update(screenX);
 
         List<Bullet> trash = new ArrayList<>();
         for(Bullet bullet:bullets){
             if(bullet.y < 0)
                 trash.add(bullet);
-            bullet.y -= 40*screenRatioY;    //move bullet upward
+            bullet.y -= 70*screenRatioY;    //move bullet upward
         }
         for(Bullet bullet:trash){
             bullets.remove(bullet);
         }
+
+
 
     }
 
@@ -86,9 +111,9 @@ public class GameView extends SurfaceView implements Runnable {
             }
 
             //draw invaders
-//            for(Invaders invader: invaders) {
-//                canvas.drawBitmap(invader.bitmap, invader.getX(), invader.getY(), paint);
-//            }
+            for(Invaders invader: invaders) {
+                canvas.drawBitmap(invader.bitmap, invader.getX(), invader.getY(), paint);
+            }
             
             getHolder().unlockCanvasAndPost(canvas);
 
@@ -105,7 +130,7 @@ public class GameView extends SurfaceView implements Runnable {
 
     public void resume(){
         isPlaying=true;
-        thread = new Thread(this);
+        thread = new Thread(this); //was this
         thread.start();
     }
     //stop thread
@@ -122,7 +147,7 @@ public class GameView extends SurfaceView implements Runnable {
     public boolean onTouchEvent(MotionEvent event) {
         switch(event.getAction()){
             case MotionEvent.ACTION_DOWN:
-            case MotionEvent.ACTION_MOVE:
+            case MotionEvent.ACTION_MOVE:       //problem with bullets
                 pause = false;
                 if (event.getX() > playerShip.x+playerShip.width) {
                     playerShip.setMovingDirection(playerShip.RIGHT);
@@ -158,4 +183,7 @@ public class GameView extends SurfaceView implements Runnable {
         }
     }
 
+//    public static void main(String[] args) {
+//
+//    }
 }
