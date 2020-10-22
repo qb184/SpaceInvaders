@@ -1,5 +1,6 @@
 package com.example.spaceinvaders;
 
+import android.content.Intent;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.view.WindowManager;
@@ -23,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
         gameView = new GameView(this,point.x,point.y);
         setContentView(gameView);
+
     }
 
     @Override
@@ -35,5 +37,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         gameView.resume();
+    }
+    public void openEndGameActivity(){
+        Intent intent = new Intent(this,MainActivity.class);
+        startActivity(intent);
     }
 }

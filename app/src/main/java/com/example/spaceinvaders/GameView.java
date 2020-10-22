@@ -1,9 +1,11 @@
 package com.example.spaceinvaders;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
@@ -22,13 +24,14 @@ public class GameView extends SurfaceView implements Runnable {
     private PlayerShip playerShip;
     private boolean pause = true;
     private List<Bullet> bullets;
+    private List<Bullet> trash;
     private MainActivity activity;
     public static float screenRatioX, screenRatioY;
     private Invaders[]  invaders = new Invaders[24];
     private Handler handler;
     boolean changeDirection;
-    boolean gameOver;
     int countInvader;
+    private boolean gameOver;
 
     public GameView(MainActivity activity, int x, int y){
         super(activity);
@@ -36,28 +39,26 @@ public class GameView extends SurfaceView implements Runnable {
         this.screenX = x;
         this.screenY = y;
         paint = new Paint();
-        gameOver = false;
         countInvader = 0;
-
-//        handler = new Handler();
-
+        isPlaying = true;
+        gameOver=false;
         //scale screen
         screenRatioX = 1440f/screenX;
         screenRatioY = 2960f/screenY;
         playerShip = new PlayerShip(this,screenX,screenY, getResources());
         bullets = new ArrayList<>();
+        trash = new ArrayList<>();
         createInvaders(invaders);
-
     }
 
-
-        @Override
+    @Override
     public void run() {
         while(isPlaying){
             update();
             draw();
             sleep();
         }
+
     }
 
     private void update() {
@@ -73,24 +74,32 @@ public class GameView extends SurfaceView implements Runnable {
         if (changeDirection) {
             for (Invaders invader : invaders) {
                 invader.movingDown();
-                if (invader.getY() > screenY - invader.getHeight())
-                    isPlaying = false;
+                if (invader.getVisibility() && invader.getY() > screenY - invader.getHeight()) {
+                    gameOver = true;
+                }
             }
         }
 
         playerShip.update(screenX);
 
-        List<Bullet> trash = new ArrayList<>();
         for(Bullet bullet:bullets){
             if(bullet.y < 0)
                 trash.add(bullet);
             bullet.y -= 70*screenRatioY;    //move bullet upward
+            for (Invaders invader:invaders){
+                if (invader.getVisibility() && Rect.intersects(invader.getCollisionShape(),bullet.getCollisionShape())){
+                    score++;
+                    invader.setY(screenY+300);
+                    bullet.setY(-300);
+                    trash.add(bullet);
+                    invader.setInvisible();
+                }
+            }
         }
+
         for(Bullet bullet:trash){
             bullets.remove(bullet);
         }
-
-
 
     }
 
@@ -100,23 +109,25 @@ public class GameView extends SurfaceView implements Runnable {
             canvas.drawColor(Color.BLACK);
             paint.setColor(Color.WHITE);
             paint.setTextSize(80*screenRatioX);
-            canvas.drawText("Score: "+score,30*screenRatioX,80*screenRatioY,paint);
 
-            //draw ship
-            canvas.drawBitmap(playerShip.getShip(),playerShip.x,playerShip.y,paint);
+            if(!gameOver && score != invaders.length) {
+                canvas.drawText("Score: "+score,30*screenRatioX,80*screenRatioY,paint);
+                //draw ship
+                canvas.drawBitmap(playerShip.getShip(), playerShip.x, playerShip.y, paint);
 
-            //draw bullet
-            for(Bullet bullet: bullets){
-                canvas.drawBitmap(bullet.bullet,bullet.x,bullet.y,paint);
+                //draw bullet
+                for (Bullet bullet : bullets) {
+                    canvas.drawBitmap(bullet.bullet, bullet.x, bullet.y, paint);
+                }
+                //draw invaders
+                for (Invaders invader : invaders) {
+                    canvas.drawBitmap(invader.bitmap, invader.getX(), invader.getY(), paint);
+                }
+            } else {
+                Intent gameOverIntent = new Intent(getContext(), GameOverActivity.class);
+                getContext().startActivity(gameOverIntent);
             }
-
-            //draw invaders
-            for(Invaders invader: invaders) {
-                canvas.drawBitmap(invader.bitmap, invader.getX(), invader.getY(), paint);
-            }
-            
             getHolder().unlockCanvasAndPost(canvas);
-
         }
     }
 
@@ -130,8 +141,7 @@ public class GameView extends SurfaceView implements Runnable {
 
     public void resume(){
         isPlaying=true;
-        thread = new Thread(this); //was this
-        thread.start();
+        new Thread(this,"one").start();
     }
     //stop thread
     public void pause(){
@@ -183,7 +193,4 @@ public class GameView extends SurfaceView implements Runnable {
         }
     }
 
-//    public static void main(String[] args) {
-//
-//    }
 }

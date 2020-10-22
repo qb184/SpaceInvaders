@@ -32,6 +32,13 @@ public class Bullet {
         rect = new Rect();
 
     }
+    public Rect getCollisionShape() {
+        return new Rect(x, y, x + width, y + height);
+    }
+
+    public void setY(int newY){
+        y = newY;
+    }
 
 
 
