@@ -74,7 +74,8 @@ public class GameView extends SurfaceView implements Runnable {
         if (changeDirection) {
             for (Invaders invader : invaders) {
                 invader.movingDown();
-                if (invader.getVisibility() && invader.getY() > screenY - invader.getHeight()) {
+                if (invader.getVisibility() && invader.getY() >= playerShip.y-playerShip.height) {
+                    System.out.println("over");
                     gameOver = true;
                 }
             }
@@ -93,6 +94,7 @@ public class GameView extends SurfaceView implements Runnable {
                     bullet.setY(-300);
                     trash.add(bullet);
                     invader.setInvisible();
+                    if(score==invaders.length)  gameOver=true;
                 }
             }
         }
