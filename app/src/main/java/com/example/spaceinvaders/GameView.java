@@ -2,6 +2,8 @@ package com.example.spaceinvaders;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -17,7 +19,6 @@ public class GameView extends SurfaceView implements Runnable {
     private Thread thread;
     private Context context;
     private int screenX,screenY=0;
-    private boolean isPlaying;
     private Paint paint;
     private int score=0;
     private Canvas canvas;
@@ -40,7 +41,6 @@ public class GameView extends SurfaceView implements Runnable {
         this.screenY = y;
         paint = new Paint();
         countInvader = 0;
-        isPlaying = true;
         gameOver=false;
         //scale screen
         screenRatioX = 1440f/screenX;
@@ -53,7 +53,7 @@ public class GameView extends SurfaceView implements Runnable {
 
     @Override
     public void run() {
-        while(isPlaying){
+        while(!gameOver){
             update();
             draw();
             sleep();
@@ -114,6 +114,7 @@ public class GameView extends SurfaceView implements Runnable {
 
             if(!gameOver && score != invaders.length) {
                 canvas.drawText("Score: "+score,30*screenRatioX,80*screenRatioY,paint);
+
                 //draw ship
                 canvas.drawBitmap(playerShip.getShip(), playerShip.x, playerShip.y, paint);
 
@@ -142,13 +143,14 @@ public class GameView extends SurfaceView implements Runnable {
     }
 
     public void resume(){
-        isPlaying=true;
-        new Thread(this,"one").start();
+        gameOver=false;
+        thread = new Thread(this,"one");
+        thread.start();
     }
     //stop thread
     public void pause(){
         try {
-            isPlaying = false;
+            gameOver = true;
             thread.join();
         } catch (InterruptedException e){
             e.printStackTrace();
@@ -159,7 +161,7 @@ public class GameView extends SurfaceView implements Runnable {
     public boolean onTouchEvent(MotionEvent event) {
         switch(event.getAction()){
             case MotionEvent.ACTION_DOWN:
-            case MotionEvent.ACTION_MOVE:       //problem with bullets
+            //case MotionEvent.ACTION_MOVE:       //problem with bullets
                 pause = false;
                 if (event.getX() > playerShip.x+playerShip.width) {
                     playerShip.setMovingDirection(playerShip.RIGHT);
