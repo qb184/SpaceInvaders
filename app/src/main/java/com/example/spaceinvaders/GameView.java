@@ -58,7 +58,6 @@ public class GameView extends SurfaceView implements Runnable {
             draw();
             sleep();
         }
-
     }
 
     private void update() {
@@ -75,7 +74,6 @@ public class GameView extends SurfaceView implements Runnable {
             for (Invaders invader : invaders) {
                 invader.movingDown();
                 if (invader.getVisibility() && invader.getY() >= playerShip.y-playerShip.height) {
-                    System.out.println("over");
                     gameOver = true;
                 }
             }
@@ -143,14 +141,14 @@ public class GameView extends SurfaceView implements Runnable {
     }
 
     public void resume(){
-        gameOver=false;
+        pause=false;
         thread = new Thread(this,"one");
         thread.start();
     }
     //stop thread
     public void pause(){
         try {
-            gameOver = true;
+            pause = true;
             thread.join();
         } catch (InterruptedException e){
             e.printStackTrace();
@@ -161,7 +159,7 @@ public class GameView extends SurfaceView implements Runnable {
     public boolean onTouchEvent(MotionEvent event) {
         switch(event.getAction()){
             case MotionEvent.ACTION_DOWN:
-            //case MotionEvent.ACTION_MOVE:       //problem with bullets
+            case MotionEvent.ACTION_MOVE:       //problem with bullets
                 pause = false;
                 if (event.getX() > playerShip.x+playerShip.width) {
                     playerShip.setMovingDirection(playerShip.RIGHT);
@@ -176,7 +174,6 @@ public class GameView extends SurfaceView implements Runnable {
             case MotionEvent.ACTION_UP:
                 pause = true;
                 playerShip.setMovingDirection(playerShip.STOP);
-
                 break;
         }
         return true;

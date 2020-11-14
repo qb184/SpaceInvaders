@@ -51,10 +51,10 @@ public class PlayerShip {
     public void update(int screenX){
         //update position of x
         if(shipMoving == LEFT){
-            x -= 10*screenRatioX;
+            x -= 20*screenRatioX;
         }
         if (shipMoving == RIGHT){
-            x += 10*screenRatioX;
+            x += 20*screenRatioX;
         }
 
         //check if the ship reach 2 sides of screen
