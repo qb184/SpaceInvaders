@@ -33,6 +33,7 @@ public class GameView extends SurfaceView implements Runnable {
     boolean changeDirection;
     int countInvader;
     private boolean gameOver;
+    private boolean level2;
 
     public GameView(MainActivity activity, int x, int y){
         super(activity);
@@ -42,6 +43,7 @@ public class GameView extends SurfaceView implements Runnable {
         paint = new Paint();
         countInvader = 0;
         gameOver=false;
+        level2 = false;
         //scale screen
         screenRatioX = 1440f/screenX;
         screenRatioY = 2960f/screenY;
@@ -53,7 +55,7 @@ public class GameView extends SurfaceView implements Runnable {
 
     @Override
     public void run() {
-        while(!gameOver){
+        while(!gameOver && !level2){
             update();
             draw();
             sleep();
@@ -92,7 +94,10 @@ public class GameView extends SurfaceView implements Runnable {
                     bullet.setY(-300);
                     trash.add(bullet);
                     invader.setInvisible();
-                    if(score==invaders.length)  gameOver=true;
+                    if(score==invaders.length)  {
+                        //gameOver=true; ///will remove later
+                        level2 = true;
+                    }
                 }
             }
         }
@@ -110,8 +115,15 @@ public class GameView extends SurfaceView implements Runnable {
             paint.setColor(Color.WHITE);
             paint.setTextSize(80*screenRatioX);
 
-            if(!gameOver && score != invaders.length) {
-                canvas.drawText("Score: "+score,30*screenRatioX,80*screenRatioY,paint);
+
+            if (gameOver){
+                Intent gameOverIntent = new Intent(getContext(), GameOverActivity.class);
+                getContext().startActivity(gameOverIntent);
+            } else if(score == invaders.length) {
+                Intent levelIntent = new Intent(getContext(), NextLevelActivity.class);
+                getContext().startActivity(levelIntent);
+            } else {
+                canvas.drawText("Score: " + score, 30 * screenRatioX, 80 * screenRatioY, paint);
 
                 //draw ship
                 canvas.drawBitmap(playerShip.getShip(), playerShip.x, playerShip.y, paint);
@@ -124,10 +136,8 @@ public class GameView extends SurfaceView implements Runnable {
                 for (Invaders invader : invaders) {
                     canvas.drawBitmap(invader.bitmap, invader.getX(), invader.getY(), paint);
                 }
-            } else {
-                Intent gameOverIntent = new Intent(getContext(), GameOverActivity.class);
-                getContext().startActivity(gameOverIntent);
             }
+
             getHolder().unlockCanvasAndPost(canvas);
         }
     }

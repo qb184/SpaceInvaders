@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         gameView.resume();
     }
     public void openEndGameActivity(){
-        Intent intent = new Intent(this,MainActivity.class);
+        Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
 }

@@ -30,11 +30,4 @@
         android:textSize="30dp"
         android:textStyle="bold|italic"
         android:background="@drawable/button_background"/>
-
-        
-
-
-
-
-
 </RelativeLayout>
