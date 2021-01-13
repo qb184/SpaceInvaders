@@ -1,5 +1,6 @@
 package com.example.spaceinvaders;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -20,8 +21,7 @@ public class PlayerShip {
     private GameView gameView;
     int toShoot = 0;
 
-    public PlayerShip(GameView gameView, int screenX, int screenY,Resources res){
-        this.gameView = gameView;
+    public PlayerShip(Resources res, int screenX, int screenY){
         //draw spaceship
         ship = BitmapFactory.decodeResource(res,R.drawable.ship);
 
@@ -37,7 +37,6 @@ public class PlayerShip {
         ship = Bitmap.createScaledBitmap(ship, width, height,false);
         x = screenX/2;
         y = (int) (screenY-60*screenRatioY);
-
     }
 
     public void setMovingDirection(int direction){
@@ -62,19 +61,14 @@ public class PlayerShip {
             x = 0;
         if(x >= screenX - width)
             x = screenX - width;
-
     }
 
     public Bitmap getShip(){
-        if(toShoot!=0){
-            gameView.newBullet();
-            toShoot--;
-        }
         return ship;
     }
 
-    public Rect getCollisionShape(){
-        return new Rect(x,y,x+width,y+height);
-    }
+//    public Rect getCollisionShape(){
+//        return new Rect(x,y,x+width,y+height);
+//    }
 
 }

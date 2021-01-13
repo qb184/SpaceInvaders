@@ -28,7 +28,7 @@ public class GameView extends SurfaceView implements Runnable {
     private List<Bullet> trash;
     private MainActivity activity;
     public static float screenRatioX, screenRatioY;
-    private Invaders[]  invaders = new Invaders[24];
+    private Invaders[]  invaders;
     private Handler handler;
     boolean changeDirection;
     int countInvader;
@@ -44,10 +44,11 @@ public class GameView extends SurfaceView implements Runnable {
         countInvader = 0;
         gameOver=false;
         level2 = false;
+        invaders = new Invaders[24];
         //scale screen
         screenRatioX = 1440f/screenX;
         screenRatioY = 2960f/screenY;
-        playerShip = new PlayerShip(this,screenX,screenY, getResources());
+        playerShip = new PlayerShip(this.getResources(),screenX,screenY);
         bullets = new ArrayList<>();
         trash = new ArrayList<>();
         createInvaders(invaders);
@@ -115,7 +116,6 @@ public class GameView extends SurfaceView implements Runnable {
             paint.setColor(Color.WHITE);
             paint.setTextSize(80*screenRatioX);
 
-
             if (gameOver){
                 Intent gameOverIntent = new Intent(getContext(), GameOverActivity.class);
                 getContext().startActivity(gameOverIntent);
@@ -127,6 +127,10 @@ public class GameView extends SurfaceView implements Runnable {
 
                 //draw ship
                 canvas.drawBitmap(playerShip.getShip(), playerShip.x, playerShip.y, paint);
+                if(playerShip.toShoot!=0){
+                    newBullet();
+                    playerShip.toShoot--;
+                }
 
                 //draw bullet
                 for (Bullet bullet : bullets) {
@@ -167,9 +171,9 @@ public class GameView extends SurfaceView implements Runnable {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        switch(event.getAction()){
+        switch(event.getAction() & MotionEvent.ACTION_MASK){
             case MotionEvent.ACTION_DOWN:
-            case MotionEvent.ACTION_MOVE:       //problem with bullets
+            //case MotionEvent.ACTION_MOVE:       //problem with bullets
                 pause = false;
                 if (event.getX() > playerShip.x+playerShip.width) {
                     playerShip.setMovingDirection(playerShip.RIGHT);
@@ -202,6 +206,7 @@ public class GameView extends SurfaceView implements Runnable {
                 invaders[6*i+j] = new Invaders(getResources(),i,j,screenX,screenY);
             }
         }
+        System.out.println("level1");
     }
 
 }

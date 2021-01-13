@@ -21,8 +21,8 @@ public class Bullet {
         width = bullet.getWidth();
         height = bullet.getHeight();
 
-        width*=2;
-        height*=2;
+        width *=2;
+        height *=2;
 
         width *= screenRatioX;
         height *= screenRatioY;
@@ -39,8 +39,5 @@ public class Bullet {
     public void setY(int newY){
         y = newY;
     }
-
-
-
 
 }
