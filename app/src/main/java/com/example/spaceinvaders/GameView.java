@@ -46,8 +46,11 @@ public class GameView extends SurfaceView implements Runnable {
         level2 = false;
         invaders = new Invaders[24];
         //scale screen
-        screenRatioX = 1440f/screenX;
-        screenRatioY = 2960f/screenY;
+//        screenRatioX = 1440f/screenX;
+//        screenRatioY = 2960f/screenY;
+
+        screenRatioX = 1;
+        screenRatioY = 1;
         playerShip = new PlayerShip(this.getResources(),screenX,screenY);
         bullets = new ArrayList<>();
         trash = new ArrayList<>();
@@ -173,7 +176,6 @@ public class GameView extends SurfaceView implements Runnable {
     public boolean onTouchEvent(MotionEvent event) {
         switch(event.getAction() & MotionEvent.ACTION_MASK){
             case MotionEvent.ACTION_DOWN:
-            //case MotionEvent.ACTION_MOVE:       //problem with bullets
                 pause = false;
                 if (event.getX() > playerShip.x+playerShip.width) {
                     playerShip.setMovingDirection(playerShip.RIGHT);

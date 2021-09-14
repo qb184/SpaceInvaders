@@ -35,9 +35,9 @@ public class Invaders {
     //move invaders to left or right
     public void update() {
         if (direction == LEFT)
-            x -= 10 * screenRatioX;
+            x -= 12 * screenRatioX;
         else if (direction == RIGHT)
-            x += 10 * screenRatioX;
+            x += 12 * screenRatioX;
     }
 
     public void movingDown() {
